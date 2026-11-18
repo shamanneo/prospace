@@ -107,6 +107,8 @@ Prefix-polling and native-streaming runners for other models: see [runners/READM
 
 ## 🔥 Train
 
+We trained ProSpace-VLM on four NVIDIA H200 GPUs (141 GB each).
+
 **1. Data**
 
 ```bash
