@@ -1,6 +1,6 @@
 <div align="center" style="font-family: charter;">
 
-<h1><i>Thinking in Streams</i>:</br> Proactive Spatial Reasoning with Vision-Language Models</h1>
+<h1>🌊 <i>Thinking in Streams</i>:</br> Proactive Spatial Reasoning with Vision-Language Models</h1>
 
 <img src="assets/fig_teaser.png" width="100%"/>
 
