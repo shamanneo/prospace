@@ -16,7 +16,7 @@
 
 - **ProSpace-Bench**: 3,636 streams, nine tasks. A model watches a 1 fps stream with a standing request and has to respond at the right second, or stay silent when the event never happens.
 - **ProSpace-Train**: supervised training streams, a balanced 100K set and the full 400K set.
-- **ProSpace-VLM**: Qwen2.5-VL-7B + LoRA, with CUT3R geometry (points and camera pose) injected at layers 4, 8, 12 and 16.
+- **ProSpace-VLM**: a streaming VLM with explicit geometric encodings injected into its intermediate layers.
 
 ## Folder layout
 
@@ -136,11 +136,6 @@ bash scripts/eval_streaming.sh <tag> <timechat_online | livecc | dispider | stre
 
 Both write `results/<tag>/` and print the row. Any other Hugging Face chat model runs with `<family>` = `images`.
 
-Notes:
-
-- We re-ran each of these rows on 45 streams (5 per task) with this code. 11 of the 13 rows gave the same response second as the paper's records on all 45 streams. LiveCC and Dispider differed on a few streams (their records in the paper were made on a different GPU model), so these two rows can come out slightly different from Table 1.
-- In the paper's Qwen3-VL-8B run, 108 Object Direction streams were asked with an earlier wording of the request. This code uses the final wording for every stream, so that cell can differ slightly.
-
 ## Train
 
 **1. Data**
@@ -165,10 +160,6 @@ bash scripts/eval_prospace_vlm.sh 0,1,2,3 runs/prospace_vlm_100k/best
 bash scripts/train_polling.sh 0,1,2,3 100k
 ADAPTER=runs/qwen3vl8b_polling_100k/adapter_best bash scripts/eval_polling.sh qwen3vl8b_sft qwen3 Qwen/Qwen3-VL-8B-Instruct 0,1,2,3
 ```
-
-Both trainers use the settings of the paper (LoRA r 16, lr 1e-4, one epoch) and keep the checkpoint with the lowest validation loss. Training is not bit-reproducible on GPU, so a retrained model scores close to the paper's row, not exactly on it.
-
-The other fine-tuned rows of Table 1 (VLM-3R, Spatial-TTT, VideoLLM-online, Stream3D-VLM) were trained on the same data with their authors' training code, which is not part of this repository.
 
 ## Scoring
 
