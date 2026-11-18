@@ -10,13 +10,13 @@
 
 ## News
 
-- **[2026-11-19]** Released [ProSpace-Bench](https://huggingface.co/datasets/shamanneo/ProSpace-Bench), [ProSpace-Train](https://huggingface.co/datasets/shamanneo/ProSpace-Train), [ProSpace-VLM](https://huggingface.co/shamanneo/ProSpace-VLM), and the code.
+- **[2026-11-19]** Released 🤗 [ProSpace-Bench](https://huggingface.co/datasets/shamanneo/ProSpace-Bench), 🤗 [ProSpace-Train](https://huggingface.co/datasets/shamanneo/ProSpace-Train), 🤗 [ProSpace-VLM](https://huggingface.co/shamanneo/ProSpace-VLM), and the code.
 
 ## Overview
 
-- 🤗 [**ProSpace-Bench**](https://huggingface.co/datasets/shamanneo/ProSpace-Bench): 3,636 streams, nine tasks. A model watches a 1 fps stream with a standing request and has to respond at the right second, or stay silent when the event never happens.
-- 🤗 [**ProSpace-Train**](https://huggingface.co/datasets/shamanneo/ProSpace-Train): supervised training streams, a balanced 100K set and an extended 400K set.
-- 🤗 [**ProSpace-VLM**](https://huggingface.co/shamanneo/ProSpace-VLM): a streaming VLM with explicit geometric encodings injected into its intermediate layers.
+- **ProSpace-Bench**: 3,636 streams, nine tasks. A model watches a 1 fps stream with a standing request and has to respond at the right second, or stay silent when the event never happens.
+- **ProSpace-Train**: supervised training streams, a balanced 100K set and an extended 400K set.
+- **ProSpace-VLM**: a streaming VLM with explicit geometric encodings injected into its intermediate layers.
 
 ## Setup
 
