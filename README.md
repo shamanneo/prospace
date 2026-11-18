@@ -8,6 +8,10 @@
 
 </div>
 
+## News
+
+- **[2026-11-19]** Released [ProSpace-Bench](https://huggingface.co/datasets/shamanneo/ProSpace-Bench), [ProSpace-Train](https://huggingface.co/datasets/shamanneo/ProSpace-Train), [ProSpace-VLM](https://huggingface.co/shamanneo/ProSpace-VLM), and the code.
+
 ## Overview
 
 - **ProSpace-Bench**: 3,636 streams, nine tasks. A model watches a 1 fps stream with a standing request and has to respond at the right second, or stay silent when the event never happens.
@@ -64,8 +68,8 @@ cd ../..
 **3. Benchmark and checkpoint** (Hugging Face)
 
 ```bash
-hf download HF_USER/ProSpace-Bench prospace_bench.jsonl --repo-type dataset --local-dir data
-hf download HF_USER/ProSpace-VLM prospace_vlm.pth --local-dir checkpoints
+hf download shamanneo/ProSpace-Bench prospace_bench.jsonl --repo-type dataset --local-dir data
+hf download shamanneo/ProSpace-VLM prospace_vlm.pth --local-dir checkpoints
 ```
 
 The base model `Qwen/Qwen2.5-VL-7B-Instruct` is downloaded on first use.
@@ -92,7 +96,7 @@ python scripts/check_frames.py                                                # 
 bash scripts/eval_prospace_vlm.sh 0,1,2,3        # GPU ids; one GPU also works
 ```
 
-Expected average: `71.8 / 87.3` (the ProSpace-VLM row of Table 1). The run is resumable: run the same command again if it stops. For a quick test of the pipeline (the first 20 streams), `LIMIT=20 OUT=results/quick bash scripts/eval_prospace_vlm.sh 0`.
+This is the ProSpace-VLM row of Table 1. The run is resumable: run the same command again if it stops. For a quick test of the pipeline (the first 20 streams), `LIMIT=20 OUT=results/quick bash scripts/eval_prospace_vlm.sh 0`.
 
 ## Evaluate other models
 
@@ -142,7 +146,7 @@ Notes:
 **1. Data**
 
 ```bash
-hf download HF_USER/ProSpace-Train --repo-type dataset --local-dir data/train
+hf download shamanneo/ProSpace-Train --repo-type dataset --local-dir data/train
 python scripts/prepare_train.py --set 100k --polling --check     # --set 400k for the full set
 ```
 
