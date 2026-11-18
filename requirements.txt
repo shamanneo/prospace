@@ -1,0 +1,22 @@
+# Python 3.11; versions of the environment the paper numbers were produced with
+torch==2.13.0
+torchvision==0.28.0
+transformers==5.15.1
+peft==0.21.0
+accelerate==1.14.0
+safetensors==0.8.0
+tokenizers==0.22.2
+numpy==2.2.6
+pillow==12.3.0
+einops==0.8.2
+omegaconf==2.3.1
+scipy==1.17.1
+timm==1.0.28
+tqdm==4.70.0
+trimesh==4.12.2
+matplotlib==3.11.1
+PyYAML==6.0.3
+qwen-vl-utils==0.0.14
+opencv-python-headless==5.0.0.93   # imported by CUT3R
+av==18.1.0                # only scripts/prepare_frames.py (ScanNet++ video decoding)
+gdown

@@ -1,0 +1,33 @@
+diff --git a/src/croco/models/pos_embed.py b/src/croco/models/pos_embed.py
+index 0f76e4d..c6d9261 100644
+--- a/src/croco/models/pos_embed.py
++++ b/src/croco/models/pos_embed.py
+@@ -150,10 +150,14 @@ except ImportError:
+             return torch.cat((-x2, x1), dim=-1)
+ 
+         def apply_rope1d(self, tokens, pos1d, cos, sin):
++            # ProSpace (2026-09-22): the cuRoPE2D maths evaluated directly for ANY integer position (CUT3R feeds
++            # negative positions for its state tokens; the original embedding-table lookup asserts on them).
+             assert pos1d.ndim == 2
+-            cos = torch.nn.functional.embedding(pos1d, cos)[:, None, :, :]
+-            sin = torch.nn.functional.embedding(pos1d, sin)[:, None, :, :]
+-            return (tokens * cos) + (self.rotate_half(tokens) * sin)
++            D = tokens.size(3)
++            inv_freq = 1.0 / (self.base ** (torch.arange(0, D, 2, device=tokens.device, dtype=torch.float32) / D))
++            ang = pos1d.to(torch.float32)[..., None] * inv_freq * self.F0                      # (B, N, D/2)
++            ang = torch.cat((ang, ang), dim=-1)[:, None]                                        # (B, 1, N, D)
++            return (tokens * ang.cos().to(tokens.dtype)) + (self.rotate_half(tokens) * ang.sin().to(tokens.dtype))
+ 
+         def forward(self, tokens, positions):
+             """
+@@ -168,9 +172,7 @@ except ImportError:
+             ), "number of dimensions should be a multiple of two"
+             D = tokens.size(3) // 2
+             assert positions.ndim == 3 and positions.shape[-1] == 2  # Batch, Seq, 2
+-            cos, sin = self.get_cos_sin(
+-                D, int(positions.max()) + 1, tokens.device, tokens.dtype
+-            )
++            cos = sin = None
+             # split features into two along the feature dimension, and apply rope1d on each half
+             y, x = tokens.chunk(2, dim=-1)
+             y = self.apply_rope1d(y, positions[:, :, 0], cos, sin)

@@ -1,0 +1,82 @@
+diff --git a/scripts/eval/evaluate.py b/scripts/eval/evaluate.py
+index 58f7dbb..da3807e 100644
+--- a/scripts/eval/evaluate.py
++++ b/scripts/eval/evaluate.py
+@@ -461,6 +461,14 @@ class StreamingEvaluator:
+             return generated_text, timing_stats
+ 
+         # ===== Step 4: Handle the Frame 0 decision =====
++        # ProSpace (2026-09-22): frames before `min_stop_frame` are the reference phase of Object Re-finding; a STOP
++        # there is not a response (same rule as the polling runners' score_from), so the decision is forced to CONTINUE.
++        min_stop_frame = getattr(self, "min_stop_frame", 0)
++        if min_stop_frame > 0 and next_token_id != self.frame_interval_token_id:
++            if self.is_main_process():
++                print(f"  Forced continue (frame 0 < min_stop_frame {min_stop_frame}; model said '{self.tokenizer.decode([next_token_id])}')")
++            next_token_id = self.frame_interval_token_id
++            next_token = torch.tensor([[next_token_id]], dtype=torch.long, device=self.device)
+         current_seq_len += 1  # account for the just-generated decision token
+ 
+         # Forward the decision token to update the KV cache.
+@@ -594,6 +602,11 @@ class StreamingEvaluator:
+                     print(f"  Decoded token: '{self.tokenizer.decode([next_token_id])}'")
+ 
+             current_frame_index = frame_idx
++            if min_stop_frame > frame_idx and next_token_id != self.frame_interval_token_id:
++                if self.is_main_process():
++                    print(f"  Forced continue (frame {frame_idx} < min_stop_frame {min_stop_frame}; model said '{self.tokenizer.decode([next_token_id])}')")
++                next_token_id = self.frame_interval_token_id
++                next_token = torch.tensor([[next_token_id]], dtype=torch.long, device=self.device)
+             current_seq_len += 1  # account for the decision token
+ 
+             with torch.no_grad(), torch.amp.autocast('cuda', dtype=torch.bfloat16):
+diff --git a/src/qwen_vl/model/geometry_encoders/streamvggt_encoder.py b/src/qwen_vl/model/geometry_encoders/streamvggt_encoder.py
+index 695d766..6b05850 100644
+--- a/src/qwen_vl/model/geometry_encoders/streamvggt_encoder.py
++++ b/src/qwen_vl/model/geometry_encoders/streamvggt_encoder.py
+@@ -8,6 +8,11 @@ from .base import BaseGeometryEncoder, GeometryEncoderConfig
+ from ..streamvggt.utils.pose_enc import pose_encoding_to_extri_intri
+ from ..streamvggt.utils.geometry import unproject_depth_map_to_point_map
+ 
++import os as _os
++
++_FULL_MAX = int(_os.environ.get("PROSPACE_GEO_FULL_MAX", "32"))   # frames processed in one pass (see encode below)
++
++
+ class StreamVGGTEncoder(BaseGeometryEncoder):
+     """StreamVGGT geometry encoder wrapper."""
+     
+@@ -42,14 +47,27 @@ class StreamVGGTEncoder(BaseGeometryEncoder):
+ 
+         with torch.no_grad():
+             with torch.cuda.amp.autocast(dtype=dtype):
+-                # Get aggregated tokens from StreamVGGT
+-                images = images[None]
+                 model = self.streamvggt
+-                
+-                aggregated_tokens_list, patch_start_idx = model.aggregator(images)
+-                features = aggregated_tokens_list[-2][0, :, patch_start_idx:]
+-                
+-                camera_token = aggregated_tokens_list[-2][0, :, 0:1]
++                # ProSpace (2026-09-19): short clips in one batched pass (the original path), longer ones frame by
++                # frame with the KV cache like StreamVGGT.inference.  Both give the same features (causal global
++                # attention; measured cosine 0.99998), but the all-frames call builds an (S*P) x (S*P) causal mask:
++                # fast up to ~32 frames (about 2x), out of memory past ~100.  PROSPACE_GEO_FULL_MAX sets the switch.
++                if images.shape[0] <= _FULL_MAX:
++                    tokens_list, patch_start_idx = model.aggregator(images[None])
++                    features = tokens_list[-2][0, :, patch_start_idx:]
++                    camera_token = tokens_list[-2][0, :, 0:1]
++                else:
++                    past_key_values = [None] * model.aggregator.depth
++                    feats, cams = [], []
++                    for i in range(images.shape[0]):
++                        tokens_list, patch_start_idx, past_key_values = model.aggregator(
++                            images[i:i + 1][None], past_key_values=past_key_values, use_cache=True, past_frame_idx=i)
++                        feats.append(tokens_list[-2][0, :, patch_start_idx:])
++                        cams.append(tokens_list[-2][0, :, 0:1])
++                        del tokens_list
++                    del past_key_values
++                    features = torch.cat(feats, dim=0)
++                    camera_token = torch.cat(cams, dim=0)
+                 
+ 
+                 concat_features = torch.cat([camera_token, features], dim=1)
