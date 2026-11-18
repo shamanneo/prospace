@@ -18,34 +18,6 @@
 - 🤗 [**ProSpace-Train**](https://huggingface.co/datasets/shamanneo/ProSpace-Train): supervised training streams, a balanced 100K set and an extended 400K set.
 - 🤗 [**ProSpace-VLM**](https://huggingface.co/shamanneo/ProSpace-VLM): a streaming VLM with explicit geometric encodings injected into its intermediate layers.
 
-## Folder layout
-
-Everything is relative to the repository root. The places marked `<-` are the ones you fill in.
-
-```
-prospace/
-├── data/
-│   ├── prospace_bench.jsonl         <- the benchmark, one stream per line
-│   ├── frames/                      <- benchmark frames
-│   │   ├── scannetpp/<scene_id>/frame_XXXXXX.jpg
-│   │   ├── scannet/<scene_id>/frame_XXXXXX.jpg
-│   │   ├── ca1m/<scene_id>/frame_XXXXXX.jpg
-│   │   └── mp3d/<scene_id>/frame_XXXXXX.jpg
-│   ├── train/                       <- ProSpace-Train files (only for training)
-│   ├── train_frames/                <- training frames (only for training)
-│   ├── frames_manifest.tsv          md5 of every benchmark frame
-│   └── human_subset_900.json        ids of the 900 streams of the human study
-├── checkpoints/prospace_vlm.pth     <- ProSpace-VLM (LoRA + the four per-layer MLPs)
-├── third_party/CUT3R/               <- CUT3R
-├── prospace_vlm/                    model, native-streaming trainer and evaluation
-├── prospace_bench/scoring.py        scoring rules
-├── runners/                         prefix-polling and native-streaming runners for other models
-├── training/                        prefix-polling trainer
-└── scripts/
-```
-
-`XXXXXX` is the six-digit `frame_ids` entry of the stream, e.g. `frame_000120.jpg`.
-
 ## Setup
 
 **1. Environment** (Python 3.11)
@@ -89,6 +61,37 @@ python scripts/check_frames.py                                                # 
 - The benchmark uses 46 ScanNet++ scenes, 147 ScanNet scenes, 49 CA-1M validation captures and 18 Matterport3D houses. Each script reads only the scenes it needs and names the source files it cannot find.
 - `render_mp3d.py` renders with habitat-sim 0.3.1 (headless), which needs its own Python 3.9 environment: `conda create -n habitat python=3.9 && conda install -n habitat habitat-sim=0.3.1 headless -c conda-forge -c aihabitat`, plus `pip install pillow`. `<Matterport3D root>` is the habitat release of the dataset (`mp3d/`).
 - `check_frames.py` passes when every frame is md5-identical to ours. The exception is 13 Matterport3D frames, which the renderer reproduces only to within a few pixels; they are reported as `near`. We checked the render on RTX 2080 Ti GPUs.
+
+<details>
+<summary>Folder layout after setup</summary>
+
+The places marked `<-` are the ones the steps above fill in.
+
+```
+prospace/
+├── data/
+│   ├── prospace_bench.jsonl         <- the benchmark, one stream per line
+│   ├── frames/                      <- benchmark frames
+│   │   ├── scannetpp/<scene_id>/frame_XXXXXX.jpg
+│   │   ├── scannet/<scene_id>/frame_XXXXXX.jpg
+│   │   ├── ca1m/<scene_id>/frame_XXXXXX.jpg
+│   │   └── mp3d/<scene_id>/frame_XXXXXX.jpg
+│   ├── train/                       <- ProSpace-Train files (only for training)
+│   ├── train_frames/                <- training frames (only for training)
+│   ├── frames_manifest.tsv          md5 of every benchmark frame
+│   └── human_subset_900.json        ids of the 900 streams of the human study
+├── checkpoints/prospace_vlm.pth     <- ProSpace-VLM (LoRA + the four per-layer MLPs)
+├── third_party/CUT3R/               <- CUT3R
+├── prospace_vlm/                    model, native-streaming trainer and evaluation
+├── prospace_bench/scoring.py        scoring rules
+├── runners/                         prefix-polling and native-streaming runners for other models
+├── training/                        prefix-polling trainer
+└── scripts/
+```
+
+`XXXXXX` is the six-digit `frame_ids` entry of the stream, e.g. `frame_000120.jpg`.
+
+</details>
 
 ## Evaluate ProSpace-VLM
 
