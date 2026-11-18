@@ -8,17 +8,17 @@
 
 </div>
 
-## News
+## 📰 News
 
 - **[2026-11-19]** Released 🤗 [ProSpace-Bench](https://huggingface.co/datasets/shamanneo/ProSpace-Bench), 🤗 [ProSpace-Train](https://huggingface.co/datasets/shamanneo/ProSpace-Train), 🤗 [ProSpace-VLM](https://huggingface.co/shamanneo/ProSpace-VLM), and the code.
 
-## Overview
+## 📌 Overview
 
 - **ProSpace-Bench**: 3,636 streams, nine tasks. A model watches a 1 fps stream with a standing request and has to respond at the right second, or stay silent when the event never happens.
 - **ProSpace-Train**: supervised training streams, a balanced 100K set and an extended 400K set.
 - **ProSpace-VLM**: a streaming VLM with explicit geometric encodings injected into its intermediate layers.
 
-## Setup
+## ⚙️ Setup
 
 **1. Environment** (Python 3.11)
 
@@ -93,7 +93,7 @@ prospace/
 
 </details>
 
-## Evaluate ProSpace-VLM
+## 📊 Evaluate ProSpace-VLM
 
 ```bash
 bash scripts/eval_prospace_vlm.sh 0,1,2,3        # GPU ids; one GPU also works
@@ -101,11 +101,11 @@ bash scripts/eval_prospace_vlm.sh 0,1,2,3        # GPU ids; one GPU also works
 
 The run is resumable: run the same command again if it stops. For a quick test of the pipeline (the first 20 streams), `LIMIT=20 OUT=results/quick bash scripts/eval_prospace_vlm.sh 0`.
 
-## Evaluate other models
+## 🧪 Evaluate other models
 
 Prefix-polling and native-streaming runners for other models: see [runners/README.md](runners/README.md).
 
-## Train
+## 🔥 Train
 
 **1. Data**
 
@@ -130,7 +130,7 @@ bash scripts/train_polling.sh 0,1,2,3 100k
 ADAPTER=runs/qwen3vl8b_polling_100k/adapter_best bash scripts/eval_polling.sh qwen3vl8b_sft qwen3 Qwen/Qwen3-VL-8B-Instruct 0,1,2,3
 ```
 
-## Scoring
+## 🎯 Scoring
 
 Each cell is `timely / abstention`:
 
@@ -140,10 +140,10 @@ Each cell is `timely / abstention`:
 
 A record is one line of JSON with `task`, `episode_id` and `response_i` (the response second, or `null`). To score your own model, write one record per stream and run `python scripts/score.py <file or folder>`.
 
-## License
+## 📄 License
 
 The code in this repository is released under the [Apache License 2.0](LICENSE). ScanNet++, ScanNet, CA-1M and Matterport3D keep their own terms of use; this repository does not redistribute their data. CUT3R, Qwen2.5-VL and the other models keep their own licenses.
 
-## Citation
+## 📝 Citation
 
 TBA
