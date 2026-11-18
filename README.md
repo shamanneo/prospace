@@ -15,7 +15,7 @@
 ## Overview
 
 - **ProSpace-Bench**: 3,636 streams, nine tasks. A model watches a 1 fps stream with a standing request and has to respond at the right second, or stay silent when the event never happens.
-- **ProSpace-Train**: supervised training streams, a balanced 100K set and the full 400K set.
+- **ProSpace-Train**: supervised training streams, a balanced 100K set and an extended 400K set.
 - **ProSpace-VLM**: a streaming VLM with explicit geometric encodings injected into its intermediate layers.
 
 ## Folder layout
@@ -142,7 +142,7 @@ Both write `results/<tag>/` and print the row. Any other Hugging Face chat model
 
 ```bash
 hf download shamanneo/ProSpace-Train --repo-type dataset --local-dir data/train
-python scripts/prepare_train.py --set 100k --polling --check     # --set 400k for the full set
+python scripts/prepare_train.py --set 100k --polling --check     # --set 400k for the extended set
 ```
 
 Training frames go to `data/train_frames/<dataset>/`, with the same file naming as the benchmark frames. `--check` counts the frames it cannot find. The scripts that build the training frames from the official downloads are TBA.
