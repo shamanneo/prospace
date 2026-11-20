@@ -10,6 +10,7 @@
 
 ## 📢 News
 
+- **[2026-11-20]** Our paper is now on arXiv: [arXiv:2611.25865](https://arxiv.org/abs/2611.25865).
 - **[2026-11-19]** Released 🤗 [ProSpace-Bench](https://huggingface.co/datasets/shamanneo/ProSpace-Bench), 🤗 [ProSpace-Train](https://huggingface.co/datasets/shamanneo/ProSpace-Train), 🤗 [ProSpace-VLM](https://huggingface.co/shamanneo/ProSpace-VLM), and the code.
 
 ## 📌 Overview
@@ -148,4 +149,14 @@ The code in this repository is released under the [Apache License 2.0](LICENSE).
 
 ## 📝 Citation
 
-TBA
+```bibtex
+@misc{hong2026thinkinginstreams,
+      title={Thinking in Streams: Proactive Spatial Reasoning with Vision-Language Models},
+      author={Junyoung Hong and Minsu Kim and Jaehyun Kim and Jeonghwan Cho and Jiwoo Lee and Seon Joo Kim},
+      year={2026},
+      eprint={2611.25865},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2611.25865},
+}
+```
