@@ -10,7 +10,7 @@
 
 ## 📢 News
 
-- **[2026-11-20]** Our paper is now on arXiv: [arXiv:2611.25865](https://arxiv.org/abs/2611.25865).
+- **[2026-11-20]** Paper released on arXiv: [Thinking in Streams](https://arxiv.org/abs/2611.25865).
 - **[2026-11-19]** Released 🤗 [ProSpace-Bench](https://huggingface.co/datasets/shamanneo/ProSpace-Bench), 🤗 [ProSpace-Train](https://huggingface.co/datasets/shamanneo/ProSpace-Train), 🤗 [ProSpace-VLM](https://huggingface.co/shamanneo/ProSpace-VLM), and the code.
 
 ## 📌 Overview
