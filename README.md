@@ -2,11 +2,30 @@
 
 <h1>🌊 <i>Thinking in Streams</i>:</br> Proactive Spatial Reasoning with Vision-Language Models</h1>
 
+<p align="center">
+  <a href="">Junyoung Hong</a> &nbsp;·&nbsp;
+  <a href="">Minsu Kim</a> &nbsp;·&nbsp;
+  <a href="">Jaehyun Kim</a> &nbsp;·&nbsp;
+  <a href="">Jeonghwan Cho</a> &nbsp;·&nbsp;
+  <a href="">Jiwoo Lee</a> &nbsp;·&nbsp;
+  <a href="">Seon Joo Kim</a>
+</p>
+
+<p align="center">
+  Yonsei University
+</p>
+
+<p align="center">
+  <a href="https://arxiv.org/abs/2611.25865"><img src="https://img.shields.io/badge/arXiv-2611.25865-B31B1B?style=for-the-badge&logo=arxiv&logoColor=white" alt="arXiv"></a>
+</p>
+
 <img src="assets/fig_teaser.png" width="100%"/>
 
 <p align="justify"><i>Recognizing when a requested spatial condition holds in streaming video can require maintaining and updating spatial knowledge across changing viewpoints. We study this capability through proactive spatial reasoning, where a model receives a query in advance and determines whether and when to respond as the stream unfolds. We introduce ProSpace-Bench, comprising nine tasks across object, camera, and scene reasoning, and ProSpace-Train for supervised training. To support spatial decisions, we propose ProSpace-VLM, which injects explicit geometric encodings estimated causally from incoming frames into intermediate VLM layers, using the existing KV cache as spatial memory and spatial token selection for efficient streaming. Experiments reveal a substantial gap between VLMs and humans, while ProSpace-VLM improves timely responses and correct abstention over fine-tuned baselines. Analyses examine how ProSpace-VLM represents previously observed spatial information across changing viewpoints.</i></p>
 
 </div>
+
+---
 
 ## 📢 News
 
