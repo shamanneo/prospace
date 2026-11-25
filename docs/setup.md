@@ -34,7 +34,7 @@ conda run -n habitat pip install pillow
 
 ## Requirements
 
-- An NVIDIA GPU. Evaluation runs on one GPU; we trained on four H200 GPUs (141 GB each).
+- An NVIDIA GPU. Evaluation runs on one GPU with about 40 GB of memory; we trained on four H200 GPUs (141 GB each, peak about 55 GiB per GPU).
 - `torch==2.13.0` from PyPI is a CUDA 13 build and needs NVIDIA driver 580 or newer. With an older driver, install the CUDA 12.8 build instead: `pip install torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cu128` (our numbers were produced with the CUDA 13 build).
 - Disk: about 6 GB for the environment, 3 GB for CUT3R, 16 GB for the base model `Qwen/Qwen2.5-VL-7B-Instruct` (downloaded on first use), 8 GB for the benchmark frames and about 100 GB for the training frames.
 - `wandb` is optional (`pip install wandb`), for training curves with `WANDB=1`.

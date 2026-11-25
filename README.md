@@ -3,12 +3,12 @@
 <h1>🌊 <i>Thinking in Streams</i>:</br> Proactive Spatial Reasoning with Vision-Language Models</h1>
 
 <p align="center">
-  <a href="">Junyoung Hong</a> &nbsp;·&nbsp;
-  <a href="">Minsu Kim</a> &nbsp;·&nbsp;
-  <a href="">Jaehyun Kim</a> &nbsp;·&nbsp;
-  <a href="">Jeonghwan Cho</a> &nbsp;·&nbsp;
-  <a href="">Jiwoo Lee</a> &nbsp;·&nbsp;
-  <a href="">Seon Joo Kim</a>
+  Junyoung Hong &nbsp;·&nbsp;
+  Minsu Kim &nbsp;·&nbsp;
+  Jaehyun Kim &nbsp;·&nbsp;
+  Jeonghwan Cho &nbsp;·&nbsp;
+  Jiwoo Lee &nbsp;·&nbsp;
+  Seon Joo Kim
 </p>
 
 <p align="center">
@@ -42,10 +42,6 @@
 
 > [!IMPORTANT]
 > This repository was written and tested on NVIDIA H200 GPUs (141 GB), CUDA 13 and driver 580.
-> - **Evaluation**: one GPU with about 40 GB of memory per run; more GPUs split the streams.
-> - **Training**: four H200 GPUs, as in the paper (peak about 55 GiB per GPU in our run). Fewer GPUs work with gradient accumulation but take longer.
-> - **Matterport3D rendering**: any recent NVIDIA GPU (checked on RTX 2080 Ti and H200).
-> With an older driver, see [docs/setup.md](docs/setup.md).
 
 ```bash
 git clone https://github.com/shamanneo/prospace && cd prospace
