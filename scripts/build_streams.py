@@ -1,6 +1,6 @@
 """ProSpace-Bench episodes -> the stream records the ProSpace-VLM evaluation reads.
 
-Reads data/prospace_bench.jsonl (3,636 streams, never edited) and writes <out>/val_poll.jsonl (one stream per line:
+Reads data/prospace_bench/prospace_bench.jsonl (3,636 streams, never edited; fetched from Hugging Face when missing) and writes <out>/val_poll.jsonl (one stream per line:
 frames, question, timely window w0 / w1, scoring start, kind), <out>/val_es.jsonl (empty) and <out>/roots.json.
   - scoring start = gap_start_i for Object Re-finding, 0 otherwise
   - frames: data/frames/<dataset>/<scene_id>/frame_<frame_id:06d>.jpg, every frame of the stream
@@ -14,10 +14,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from prospace_bench.data import FRAMES, check_layout, fetch  # noqa: E402
+
 TASKS = [
     "ego_rotation",
     "object_direction",
@@ -34,11 +38,13 @@ DATASETS = ["scannetpp", "scannet", "ca1m", "mp3d"]
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bench", default=str(ROOT / "data" / "prospace_bench.jsonl"))
-    ap.add_argument("--frames", default=str(ROOT / "data" / "frames"))
+    ap.add_argument("--bench", default=None, help="default data/prospace_bench/prospace_bench.jsonl")
+    ap.add_argument("--frames", default=str(FRAMES))
     ap.add_argument("--out", default=str(ROOT / "cache" / "streams"))
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args()
+    check_layout()
+    a.bench = a.bench or fetch("bench", "prospace_bench.jsonl")
     roots = {ds: str((Path(a.frames) / ds).absolute()) for ds in DATASETS}
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

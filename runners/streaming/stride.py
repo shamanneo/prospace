@@ -19,7 +19,7 @@ labels and the moment the first span completes (official trigger) and the first 
 Run in the STRIDE repository's environment, with flash-attn.  We ran it with torch 2.5.1, flash-attn 2.7.4.post1 and
 transformers 5.15.1, which needs patches/stride_eval.patch (the model passes the multimodal token types that
 transformers 5.x uses for M-RoPE):
-  CUDA_VISIBLE_DEVICES=0 python runners/streaming/stride.py --task object_finding --episodes data/prospace_bench.jsonl
+  CUDA_VISIBLE_DEVICES=0 python runners/streaming/stride.py --task object_finding --episodes data/prospace_bench/prospace_bench.jsonl
 """
 
 from __future__ import annotations
@@ -111,7 +111,7 @@ def main():
         default=None,
         help="episode field: triggers before this frame index are ignored (Re-finding: gap_start_i)",
     )
-    ap.add_argument("--episodes", default="data/prospace_bench.jsonl")
+    ap.add_argument("--episodes", default="data/prospace_bench/prospace_bench.jsonl")
     ap.add_argument("--frames", default=P.DEFAULT_FRAMES)
     ap.add_argument("--out", default="results/stride/object_finding.jsonl")
     ap.add_argument("--episode_id", nargs="*")

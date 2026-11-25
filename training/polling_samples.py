@@ -17,7 +17,8 @@ Every stream is used once; the file is shuffled over all tasks.  The draw is see
 
 Output (--out): train_full.jsonl (training/train_polling.py format), val.jsonl (the validation seconds of
 val_es.jsonl, one sample per (stream, second)), val_polling_episodes.jsonl (the validation streams of val_poll.jsonl),
-stats.json (frame_roots + counts).
+stats.json (frame_roots, boxed_root + counts), frames/ (the boxed request frames of Object Re-finding mid-request
+copies; nothing is written into the frame folders).
 
     python -m training.polling_samples --src <stream set dir> --stats <stats.json with frame_roots> --out <dir> \
         [--orig-src <larger set's train.jsonl(.gz)>]
@@ -237,22 +238,24 @@ def draw_box(src: Path, bbox):
     return im
 
 
-def box_on_request_frame(samples: list[dict], roots: dict) -> int:
+def box_on_request_frame(samples: list[dict], roots: dict, boxed_root: Path) -> int:
     """Object Re-finding, mid-request copies: the red box marks the object on the REQUEST frame (index q_at), while the
     trainer draws `frame0_bbox` on frame 0.  The request frame of these samples is therefore replaced by a boxed file,
-    written once next to the plain frame, and `frame0_bbox` is cleared."""
+    written once to <boxed_root>/<dataset>/<scene>/frame_XXXXXX_box_....jpg (in the output folder, never into the frame
+    folders), the sample marks it with `boxed_frame`, and `frame0_bbox` is cleared."""
     todo = {}
     for s in samples:
         q = int(s.get("q_at", 0) or 0)
         if q and s.get("frame0_bbox") and s["task"] == "object_refinding":
             ds, rel = s["frames"][q].split("/", 1)
             new = boxed_rel(rel, s["frame0_bbox"])
-            todo[Path(roots[ds]) / new] = (Path(roots[ds]) / rel, s["frame0_bbox"])
+            todo[boxed_root / ds / new] = (Path(roots[ds]) / rel, s["frame0_bbox"])
             s["frames"][q] = ds + "/" + new
             s["boxed_frame"] = q
             s["frame0_bbox"] = None
     for dst, (src, bbox) in todo.items():
         if not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
             draw_box(src, bbox).save(dst, quality=95)
     return len(todo)
 
@@ -297,7 +300,7 @@ def main() -> None:
         (neg if e["w0"] is None else pos)[e["task"]].append(e)
     rng = random.Random(a.seed)
     S = build_full(pos, neg, rng)
-    n_box = box_on_request_frame(S, roots)
+    n_box = box_on_request_frame(S, roots, out / "frames")
     with (out / "train_full.jsonl").open("w") as f:
         for s in S:
             f.write(json.dumps(s, ensure_ascii=False) + "\n")
@@ -328,6 +331,7 @@ def main() -> None:
 
     stats = {
         "frame_roots": roots,
+        "boxed_root": str((out / "frames").absolute()),  # the boxed request frames (the `boxed_frame` of a sample)
         "source": str(src),
         "protocol": "prefix samples of the stream set: every stream once, the stream's own question and frames",
         "streams": {"positive": {t: len(v) for t, v in pos.items()}, "absence": {t: len(v) for t, v in neg.items()}},

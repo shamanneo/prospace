@@ -17,9 +17,10 @@
 # ADAPTER=<dir> merges a LoRA adapter from scripts/train_polling.sh into the model first (qwen25 / qwen3 families).
 set -eu
 cd "$(dirname "$0")/.."
-TAG=$1; FAMILY=$2; MODEL=$3; GPUS=${4:-0}; OUT=${OUT:-results/$TAG}; EPISODES=${EPISODES:-data/prospace_bench.jsonl}
+TAG=$1; FAMILY=$2; MODEL=$3; GPUS=${4:-0}; OUT=${OUT:-results/$TAG}; EPISODES=${EPISODES:-data/prospace_bench/prospace_bench.jsonl}
 export PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false
 mkdir -p "$OUT"
+python -m prospace_bench.data bench > /dev/null   # stops on the earlier data layout; fetches the benchmark file if missing
 case $FAMILY in
   vlm3r_video | cambrians_video | spatial_ttt)
     # Spatial-TTT loads its weights from a local folder
@@ -42,5 +43,5 @@ for t in object_finding object_refinding object_direction ego_rotation origin_re
   wait
   echo "$t done: $(cat "$OUT"/$t.s*.jsonl | wc -l) records"
 done
-partial=${LIMIT:+--partial}; [ "$EPISODES" != data/prospace_bench.jsonl ] && partial=--partial
+partial=${LIMIT:+--partial}; [ "$EPISODES" != data/prospace_bench/prospace_bench.jsonl ] && partial=--partial
 python scripts/score.py "$OUT" $partial

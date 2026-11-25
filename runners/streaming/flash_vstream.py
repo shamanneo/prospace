@@ -19,7 +19,7 @@ Runner-side shims (no repository file is edited):
 
 Run in the Flash-VStream repository's own environment (we used Python 3.10, torch 2.6.0, transformers 4.45.0,
 flash-attn):
-  CUDA_VISIBLE_DEVICES=0 python runners/streaming/flash_vstream.py --task object_finding --episodes data/prospace_bench.jsonl
+  CUDA_VISIBLE_DEVICES=0 python runners/streaming/flash_vstream.py --task object_finding --episodes data/prospace_bench/prospace_bench.jsonl
 """
 
 from __future__ import annotations
@@ -279,7 +279,7 @@ def main():
         default=None,
         help="episode field; a Yes before that second is not a response (Re-finding: gap_start_i)",
     )
-    ap.add_argument("--episodes", default="data/prospace_bench.jsonl")
+    ap.add_argument("--episodes", default="data/prospace_bench/prospace_bench.jsonl")
     ap.add_argument("--frames", default=P.DEFAULT_FRAMES)
     ap.add_argument("--out", default="results/flash_vstream/object_finding.jsonl")
     ap.add_argument("--episode-id", nargs="*", default=None)

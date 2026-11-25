@@ -16,7 +16,7 @@ test/datasets.py load_video) and the model's image processor.
 
 Run in the MMDuet repository's own environment (we used Python 3.10, torch 2.1.2, transformers 4.44.2, peft 0.12.0),
 with HF_HOME holding lmms-lab/llava-onevision-qwen2-7b-ov, google/siglip-so400m-patch14-384 and wangyueqian/MMDuet:
-  CUDA_VISIBLE_DEVICES=0 python runners/streaming/mmduet.py --task object_finding --episodes data/prospace_bench.jsonl
+  CUDA_VISIBLE_DEVICES=0 python runners/streaming/mmduet.py --task object_finding --episodes data/prospace_bench/prospace_bench.jsonl
 """
 
 from __future__ import annotations
@@ -93,7 +93,7 @@ def build(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--episodes", default="data/prospace_bench.jsonl")
+    ap.add_argument("--episodes", default="data/prospace_bench/prospace_bench.jsonl")
     ap.add_argument("--task", default="object_finding")
     ap.add_argument("--out", default=str(ROOT / "results/mmduet/object_finding.jsonl"))
     ap.add_argument("--frames", default=protocol.DEFAULT_FRAMES)

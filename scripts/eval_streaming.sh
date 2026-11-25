@@ -18,11 +18,12 @@
 # EPISODES=<file> runs another episode file (same format), TASKS="<task> ..." only some tasks (to spread tasks over GPUs).
 set -eu
 cd "$(dirname "$0")/.."
-TAG=$1; MODEL=$2; GPU=${3:-0}; OUT=${OUT:-results/$TAG}; EPISODES=${EPISODES:-data/prospace_bench.jsonl}
+TAG=$1; MODEL=$2; GPU=${3:-0}; OUT=${OUT:-results/$TAG}; EPISODES=${EPISODES:-data/prospace_bench/prospace_bench.jsonl}
 TASKS=${TASKS:-object_finding object_refinding object_direction ego_rotation origin_return visual_homing place_transition place_entry place_revisit}
 export PYTHONUNBUFFERED=1 TOKENIZERS_PARALLELISM=false PROSPACE_FRAMES_BY_DATASET=1 CUDA_VISIBLE_DEVICES=$GPU
 case $OUT in /*) ;; *) OUT=$PWD/$OUT ;; esac   # the runners change directory
 mkdir -p "$OUT"
+python -m prospace_bench.data bench > /dev/null   # stops on the earlier data layout; fetches the benchmark file if missing
 # Stream3D-VLM is asked in its own query style; the request of each task, written once and then kept fixed
 declare -A Q=(
   [object_finding]="Please monitor the video stream and report a {label}'s distance and clock direction as soon as one comes into view"
@@ -52,5 +53,5 @@ for t in $TASKS; do
   esac > "$OUT/$t.stdout" 2>&1
   echo "$t done: $(wc -l < "$OUT/$t.jsonl") records"
 done
-partial=""; [ "$EPISODES" != data/prospace_bench.jsonl ] || [ $(echo $TASKS | wc -w) != 9 ] && partial=--partial
+partial=""; [ "$EPISODES" != data/prospace_bench/prospace_bench.jsonl ] || [ $(echo $TASKS | wc -w) != 9 ] && partial=--partial
 python scripts/score.py "$OUT" $partial

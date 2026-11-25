@@ -130,7 +130,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default=MODEL)
     ap.add_argument("--task", default="object_finding", choices=sorted(TASKS))
-    ap.add_argument("--episodes", default="data/prospace_bench.jsonl")
+    ap.add_argument("--episodes", default="data/prospace_bench/prospace_bench.jsonl")
     ap.add_argument("--frames", default=str(ROOT / "data" / "frames" / "scannetpp"))
     ap.add_argument(
         "--frames-by-dataset",

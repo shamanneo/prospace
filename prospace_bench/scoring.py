@@ -27,7 +27,7 @@ TASKS = [
 SHORT = dict(zip(TASKS, ["OF", "RF", "OD", "ER", "OR", "VH", "PT", "PE", "PR"]))
 
 
-def load_bench(path="data/prospace_bench.jsonl"):
+def load_bench(path=Path(__file__).resolve().parent.parent / "data/prospace_bench/prospace_bench.jsonl"):
     """{task: {episode_id: episode}} for the 3,636 streams (one per line of the benchmark file)."""
     E = {t: {} for t in TASKS}
     for line in open(path):

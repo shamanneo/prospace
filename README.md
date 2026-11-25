@@ -40,9 +40,16 @@
 
 ## ⚙️ Setup
 
+> [!IMPORTANT]
+> This repository was written and tested on NVIDIA H200 GPUs (141 GB), CUDA 13 and driver 580.
+> - **Evaluation**: one GPU with about 40 GB of memory per run; more GPUs split the streams.
+> - **Training**: four H200 GPUs, as in the paper (peak about 55 GiB per GPU in our run). Fewer GPUs work with gradient accumulation but take longer.
+> - **Matterport3D rendering**: any recent NVIDIA GPU (checked on RTX 2080 Ti and H200).
+> With an older driver, see [docs/setup.md](docs/setup.md).
+
 ```bash
 git clone https://github.com/shamanneo/prospace && cd prospace
-bash scripts/setup.sh --habitat      # environments, CUT3R; --habitat adds the Matterport3D renderer
+bash scripts/setup.sh                # environments (incl. the Matterport3D renderer), CUT3R
 ```
 
 Then download the benchmark and the checkpoint, and build the frames from the official datasets: [docs/data.md](docs/data.md). Manual install, requirements and troubleshooting: [docs/setup.md](docs/setup.md).

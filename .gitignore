@@ -1,11 +1,10 @@
 data/frames/
+data/prospace_bench/
+data/prospace_train/
 checkpoints/*
 third_party/*
 cache/
 results/
 __pycache__/
 *.pyc
-data/prospace_bench.jsonl
-data/train/
-data/train_frames/
 runs/

@@ -12,9 +12,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from prospace_bench import scoring as S
+from prospace_bench import scoring as S  # noqa: E402
+from prospace_bench.data import fetch  # noqa: E402
 
-E = S.load_bench(ROOT / "data/prospace_bench.jsonl")
+E = S.load_bench(fetch("bench", "prospace_bench.jsonl"))
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 partial = "--partial" in sys.argv[1:]
 records = S.read_records(args[0])

@@ -70,6 +70,9 @@ def frames_of(sample: dict, roots: dict) -> list:
     from PIL import Image
 
     paths = [str(Path(roots[sample["dataset"]]) / p.split("/", 1)[1]) for p in sample["frames"]]
+    if "boxed_frame" in sample and "_boxed" in roots:  # the boxed request frame lives in the sample folder
+        q = sample["boxed_frame"]
+        paths[q] = str(Path(roots["_boxed"]) / sample["frames"][q])
     frames = list(paths)
     bbox = sample.get("frame0_bbox")
     if sample["task"] == "object_refinding" and bbox:
@@ -454,6 +457,8 @@ def main() -> None:
     data = Path(a.data)
     stats = json.loads((data / "stats.json").read_text())
     roots = stats["frame_roots"]
+    if "boxed_root" in stats:
+        roots = {**roots, "_boxed": stats["boxed_root"]}
     processor = AutoProcessor.from_pretrained(a.model)
     tok = processor.tokenizer
     eot = tok.convert_tokens_to_ids("<|im_end|>")

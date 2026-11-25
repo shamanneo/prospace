@@ -18,7 +18,7 @@ next frame index; the metadata is corrected here so the copy keeps the last *see
 total_num_frames = frames seen.
 
     CUDA_VISIBLE_DEVICES=0 python runners/qwen3vl.py --task object_finding --mode polling --step 1 \\
-        --episodes data/prospace_bench.jsonl --frames-by-dataset --all --shard 0/4 \\
+        --episodes data/prospace_bench/prospace_bench.jsonl --frames-by-dataset --all --shard 0/4 \\
         --out results/qwen3vl_8b/object_finding.s0.jsonl
 """
 
