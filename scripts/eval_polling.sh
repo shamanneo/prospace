@@ -8,6 +8,7 @@
 #   qwen3            Qwen/Qwen3-VL-8B-Instruct, Qwen/Qwen3-VL-32B-Instruct, nvidia/Cosmos-Reason2-32B,
 #                    sensenova/SenseNova-SI-1.1-Qwen3-VL-8B
 #   images           any other Hugging Face chat model (frames as an image list)
+#   internvideo3     yanziang/InternVideo3-8B-Instruct      needs transformers 4.57 (its remote code)
 #   vlm3r_video      Journey9ni/vlm-3r-llava-qwen2-lora     needs third_party/VLM-3R      (VITA-Group/VLM-3R @ 206afd0)
 #   cambrians_video  nyu-visionx/Cambrian-S-7B              needs third_party/cambrian-s  (cambrian-mllm/cambrian-s @ 058b1b4)
 #   spatial_ttt      THU-SI/Spatial-TTT-nano                needs third_party/Spatial-TTT (THU-SI/Spatial-TTT @ e2e33a6)
@@ -24,6 +25,7 @@ case $FAMILY in
     # Spatial-TTT loads its weights from a local folder
     [ $FAMILY = spatial_ttt ] && [ ! -d "$MODEL" ] && MODEL=$(python -c "from huggingface_hub import snapshot_download as d; print(d('$MODEL'))")
     run="runners/offline_spatial.py --backend $FAMILY" ;;
+  internvideo3) run="runners/internvideo3.py" ;;
   *) run="runners/vlm.py --family $FAMILY --mode polling --style state --resume${ADAPTER:+ --adapter $ADAPTER}" ;;
 esac
 n=$(echo "$GPUS" | tr ',' '\n' | wc -l)

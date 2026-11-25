@@ -15,8 +15,12 @@ sys.path.insert(0, str(ROOT))
 from prospace_bench import scoring as S
 
 E = S.load_bench(ROOT / "data/prospace_bench.jsonl")
-partial = "--partial" in sys.argv[2:]
-c, counts = S.score(S.read_records(sys.argv[1]), E, require_all=not partial)
+args = [a for a in sys.argv[1:] if not a.startswith("--")]
+partial = "--partial" in sys.argv[1:]
+records = S.read_records(args[0])
+if not partial and len({(r["task"], r["episode_id"]) for r in records}) < sum(len(v) for v in E.values()):
+    sys.exit("some streams have no record yet; finish the run, or add --partial to score only the streams that have one")
+c, counts = S.score(records, E, require_all=not partial)
 kinds = ["timely", "premature", "delayed", "miss", "correct_abstention", "false_alarm", "invalid"]
 print(
     f"{'task':18s} {'timely / abstention':>20s}   "

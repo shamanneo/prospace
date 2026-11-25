@@ -1,0 +1,47 @@
+diff --git a/stride/model/qwen3vl.py b/stride/model/qwen3vl.py
+index 7a35018..62b52fd 100644
+--- a/stride/model/qwen3vl.py
++++ b/stride/model/qwen3vl.py
+@@ -21,6 +21,18 @@ from stride.utils.input_processing import (
+ )
+ 
+ 
++
++def _prospace_mm_types(model, input_ids, pixel_values, pixel_values_videos, kwargs):
++    """ProSpace (2026-09-25): transformers 5.x needs mm_token_type_ids for M-RoPE; the pinned transformers did not.
++    0 = text, 1 = image token, 2 = video token (same convention as the processor)."""
++    if kwargs.get("mm_token_type_ids") is None and input_ids is not None and (pixel_values is not None or pixel_values_videos is not None):
++        import torch as _t
++        t = _t.zeros_like(input_ids, dtype=_t.int32)
++        t[input_ids == model.config.image_token_id] = 1
++        t[input_ids == model.config.video_token_id] = 2
++        kwargs["mm_token_type_ids"] = t
++    return kwargs
++
+ class Qwen3VLForStreamQA(Qwen3VLForConditionalGeneration):
+     accepts_loss_kwargs = False
+     _output_class = Qwen3VLCausalLMOutputWithPast
+@@ -70,6 +82,7 @@ class Qwen3VLForStreamQA(Qwen3VLForConditionalGeneration):
+         cache_position=None,
+         **kwargs,
+     ):
++        kwargs = _prospace_mm_types(self, input_ids, pixel_values, pixel_values_videos, kwargs)
+         outputs = self.model(
+             input_ids=input_ids,
+             pixel_values=pixel_values,
+@@ -223,6 +236,7 @@ class Qwen3VLForSTRIDE(Qwen3VLForStreamQA):
+         cache_position=None,
+         **kwargs,
+     ):
++        kwargs = _prospace_mm_types(self, input_ids, pixel_values, pixel_values_videos, kwargs)
+         outputs = self.model(
+             input_ids=input_ids,
+             pixel_values=pixel_values,
+@@ -234,6 +248,7 @@ class Qwen3VLForSTRIDE(Qwen3VLForStreamQA):
+             past_key_values=past_key_values,
+             inputs_embeds=inputs_embeds,
+             cache_position=cache_position,
++            mm_token_type_ids=kwargs.get("mm_token_type_ids"),
+         )
+ 
+         hidden_states = outputs[0]

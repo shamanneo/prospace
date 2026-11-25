@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 # Native streaming on ProSpace-Bench (the streaming rows of Table 1): each model runs its own streaming inference on the
 # 1 fps stream with the request given at 0 s; the second of its first response is scored.  One GPU, resumable.
-#   bash scripts/eval_streaming.sh <tag> <model: timechat_online | livecc | dispider | stream3d_vlm> [gpu, default 0]
+#   bash scripts/eval_streaming.sh <tag> <model: timechat_online | livecc | dispider | flash_vstream | mmduet | stride |
+#                                             stream3d_vlm> [gpu, default 0]
 #   bash scripts/eval_streaming.sh stream3d_vlm_4b stream3d_vlm 0
 # Run it in the model's own environment, with the model's repository under third_party/:
 #   timechat_online  wyccccc/TimeChatOnline-7B     third_party/TimeChat-Online  (yaolinli/TimeChat-Online @ 25a1578)
 #   livecc           chenjoya/LiveCC-7B-Instruct   third_party/livecc           (showlab/livecc @ fdaa91e)
 #   dispider         Mar2Ding/Dispider             third_party/Dispider         (Mark12Ding/Dispider @ 803f6b4)
+#   flash_vstream    zhang9302002/Flash-VStream-Qwen-7b  third_party/Flash-VStream  (IVGSZ/Flash-VStream @ 8f6bde2)
+#   mmduet           wangyueqian/MMDuet            third_party/MMDuet           (yellow-binary-tree/MMDuet @ 33be138)
+#   stride           interlive/STRIDE-2B           third_party/STRIDE           (interlive-team/STRIDE @ 153adb7,
+#                                                  then  git apply ../../patches/stride_eval.patch)
 #   stream3d_vlm     JonnyYu828/Stream3D-VLM-4B    third_party/Stream3D-VLM     (hanxunyu/Stream3D-VLM @ 6a7929a,
 #                                                  then  git apply ../../patches/stream3d_vlm_eval.patch)
 # Output: results/<tag>/<task>.jsonl; then  python scripts/score.py results/<tag>
@@ -39,6 +44,9 @@ for t in $TASKS; do
     timechat_online) python runners/streaming/timechat_online.py --ckpt wyccccc/TimeChatOnline-7B --stop_at_first $io ${from:+--score_from_field $from} ;;
     livecc) python runners/streaming/livecc.py --model chenjoya/LiveCC-7B-Instruct --mode ovobench --stop_at_first $io ${from:+--score_from_field $from} ;;
     dispider) python runners/streaming/dispider.py --model Mar2Ding/Dispider $io ${from:+--score_from_field $from} ;;
+    flash_vstream) python runners/streaming/flash_vstream.py --model zhang9302002/Flash-VStream-Qwen-7b $io ${from:+--score-from-field $from} ;;
+    mmduet) python runners/streaming/mmduet.py $io ${from:+--score_from_field $from} ;;
+    stride) python runners/streaming/stride.py --model interlive/STRIDE-2B $io ${from:+--score_from_field $from} ;;
     stream3d_vlm) python runners/streaming/stream3d_vlm.py --frames-by-dataset --query-text "${Q[$t]}" $io ${from:+--score-from-field $from} ;;
     *) echo "unknown model $MODEL"; exit 1 ;;
   esac > "$OUT/$t.stdout" 2>&1

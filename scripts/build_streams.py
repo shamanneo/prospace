@@ -83,7 +83,7 @@ def main() -> None:
     (out / "bench_summary.json").write_text(json.dumps(summ, indent=1))
     print(json.dumps(summ, indent=1))
     if a.check and missing:
-        raise SystemExit("some frames are missing: see data/README.md")
+        raise SystemExit("some frames are missing: build them as in docs/data.md")
 
 
 if __name__ == "__main__":

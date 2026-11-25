@@ -124,7 +124,11 @@ class ProSpaceVLM(nn.Module):
             img_pos.numel() == xyz.shape[0] * xyz.shape[1]
         ), f"{img_pos.numel()} vision tokens vs points {tuple(xyz.shape)}"
         cam = c2w[:, None].expand(-1, xyz.shape[1], -1, -1).reshape(-1, 4, 4)
-        self._ctx = {"img_pos": img_pos, "code": self.inject.encode(xyz.reshape(-1, 3), valid.reshape(-1), cam)}
+        self._ctx = {
+            "img_pos": img_pos,
+            "code": self.inject.encode(xyz.reshape(-1, 3), valid.reshape(-1), cam),
+            "xyz": xyz.reshape(-1, 3),  # read only by Spatial Token Selection (prospace_vlm/eval.py)
+        }
         self._stats = {}
         return seconds
 
