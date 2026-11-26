@@ -69,6 +69,8 @@ bash scripts/train.sh prospace-vlm 0,1,2,3         # prints the command to evalu
 
 Details and the other trainable models: [docs/train.md](docs/train.md).
 
+Object permanence analysis of the paper: [analysis/permanence](analysis/permanence/README.md).
+
 ## 🎯 Scoring
 
 Each cell is `timely / abstention`: the share of positive streams answered inside the timely window, and the share of absence streams where the model never responds. To score your own model, write one JSON line per stream with `task`, `episode_id` and `response_i` (the response second, or `null`), then run `python scripts/score.py <file or folder>`.
