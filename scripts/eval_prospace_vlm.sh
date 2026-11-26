@@ -2,7 +2,7 @@
 # ProSpace-VLM on ProSpace-Bench (3,636 streams): one shard per GPU, per-second records written as they come (resumable).
 #   bash scripts/eval_prospace_vlm.sh [gpus, default 0] [checkpoint, default checkpoints/prospace_vlm.pth]
 # With LIMIT=<n> (the first n streams per GPU) only the frames of those streams have to exist.
-# Output: results/prospace_vlm_repro/verdicts.shard*.jsonl, eval_bench.json and the Table 1 row on the screen.
+# Output: $OUT (scripts/eval.sh sets results/<model>), verdicts.shard*.jsonl and eval_bench.json, and the scores on the screen.
 # TOKEN_SELECTION=32:16 runs with Spatial Token Selection (a KV cache of the request + at most 32 frames of tokens, the
 # last 16 frames whole); use another OUT for it.
 set -eu

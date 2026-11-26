@@ -7,7 +7,7 @@ Run every command from the repository root. The weights are the Hugging Face rep
 | VLM-3R | `VLM-3R` | `VITA-Group/VLM-3R` @ `206afd0` | Python 3.10, torch 2.1.1, transformers 4.40.0 |
 | Cambrian-S-7B | `cambrian-s` | `cambrian-mllm/cambrian-s` @ `058b1b4` | Python 3.10, torch 2.6.0, transformers 4.37.0 |
 | Spatial-TTT | `Spatial-TTT` | `THU-SI/Spatial-TTT` @ `e2e33a6` | Python 3.12, torch 2.8.0, transformers 4.57.0 |
-| TimeChat-Online | `TimeChat-Online` | `yaolinli/TimeChat-Online` @ `25a1578` | Python 3.10, torch 2.4.0, transformers 4.49.0 |
+| TimeChat-Online | `TimeChat-Online` | `yaolinli/TimeChat-Online` @ `25a1578` | Python 3.10, torch 2.4.0, transformers 4.49.0, the repository's `requirement.txt`, flash-attn 2.7.4.post1 |
 | LiveCC | `livecc` | `showlab/livecc` @ `fdaa91e` | Python 3.11, torch 2.6.0, transformers 4.50.0 |
 | Dispider | `Dispider` | `Mark12Ding/Dispider` @ `803f6b4` | Python 3.10, torch 2.2.0, transformers 4.41.2 |
 | Flash-VStream | `Flash-VStream` | `IVGSZ/Flash-VStream` @ `8f6bde2` | Python 3.10, torch 2.6.0, transformers 4.45.0, flash-attn |

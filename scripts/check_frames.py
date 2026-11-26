@@ -3,6 +3,7 @@
     python scripts/check_frames.py                 # the benchmark: every frame present and md5-identical
     python scripts/check_frames.py --set train     # ProSpace-Train (both sets and the validation files)
     python scripts/check_frames.py --no-md5        # only that the files are there (fast)
+    python scripts/check_frames.py --remove-different   # delete the frames that differ, then build them again
 
 The md5 lists are data/prospace_bench/frames_manifest.tsv and data/prospace_train/frames_manifest.tsv.gz (fetched from
 Hugging Face when missing).  Layout: data/frames/<dataset>/<scene_id>/frame_<frame_id:06d>.jpg with dataset in
@@ -38,6 +39,8 @@ def main():
     ap.add_argument("--manifest", default=None, help="default: the md5 list of --set")
     ap.add_argument("--no-md5", action="store_true")
     ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--list", default=None, help="write the paths of all missing and different frames to this file")
+    ap.add_argument("--remove-different", action="store_true", help="delete the different frames so the build scripts make them again")
     a = ap.parse_args()
     check_layout()
     man = a.manifest or fetch(a.set, "frames_manifest.tsv" if a.set == "bench" else "frames_manifest.tsv.gz")
@@ -72,6 +75,14 @@ def main():
     bad = [(s, p) for _, s, p in res if s not in ("ok", "near")]
     for s, p in bad[:10]:
         print(s, p)
+    if a.list:
+        Path(a.list).write_text("".join(f"{s}\t{p}\n" for s, p in bad))
+        print(f"{len(bad)} paths written to {a.list}")
+    if a.remove_different:
+        diff = [p for s, p in bad if s == "different"]
+        for p in diff:
+            Path(p).unlink()
+        print(f"removed {len(diff)} different frames: run the build commands of docs/data.md again")
     ok = sum(s == "ok" for _, s, _ in res)
     print(f"{a.set}: {ok} / {len(res)} frames ok" + ("" if a.no_md5 else " (md5)"))
     sys.exit(1 if bad else 0)

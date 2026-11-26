@@ -15,6 +15,7 @@ bash scripts/train.sh prospace-vlm 0,1,2,3                # prints the command t
 - The third argument chooses the set: `100k` (default) or `400k` (the extended set).
 - Any number of GPUs works: the steps are accumulated to the same batch size.
 - The best checkpoint (lowest validation loss) is `runs/<model>/best` (`adapter_best` for prefix polling). Run the same command again to resume.
+- `RUN_NAME=<name>` writes to `runs/<name>` instead, and `EXTRA="..."` passes further options to the trainer (`python -m prospace_vlm.train --help`, `python -m training.train_polling --help`), e.g. a short test run.
 - `WANDB=1` logs the curves to wandb (`pip install wandb`, entity from `WANDB_ENTITY`).
 
 **Native streaming**: a decision token after every frame, `wait` before the window and `respond` inside it; absence streams are `wait` to the end.

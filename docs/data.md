@@ -4,6 +4,8 @@ The streams, labels, camera poses and md5 lists are on Hugging Face. The video f
 
 ## Download
 
+Run these in the `prospace` environment (`conda activate prospace`), from the repository root.
+
 ```bash
 hf download shamanneo/ProSpace-Bench --repo-type dataset --local-dir data/prospace_bench   # benchmark
 hf download shamanneo/ProSpace-VLM prospace_vlm.pth --local-dir checkpoints               # ProSpace-VLM
@@ -28,7 +30,7 @@ Each dataset has its own terms of use, which you accept when you request it.
 ## Benchmark frames
 
 ```bash
-python scripts/prepare_frames.py --dataset scannetpp --src <ScanNet++ root>
+python scripts/prepare_frames.py --dataset scannetpp --src <ScanNet++ root> --workers 32   # parallel decoders, default 4
 python scripts/prepare_frames.py --dataset scannet   --src <ScanNet root>
 python scripts/prepare_frames.py --dataset ca1m      --src <CA-1M root>
 conda run -n habitat python scripts/render_mp3d.py --src <Matterport3D root>
@@ -36,15 +38,16 @@ python scripts/check_frames.py
 ```
 
 - The benchmark uses 46 ScanNet++ scenes, 147 ScanNet scenes, 49 CA-1M validation captures and 18 Matterport3D houses (118,577 frames). Each script reads only what it needs, names the source files it cannot find, and skips frames that already exist, so it can be run again.
-- `check_frames.py` compares every frame with our md5. 13 Matterport3D frames are reproduced only to within a few pixels and are reported as `near`; this is expected.
-- A `near` result needs no action: it is either a frame with the same pixels and a different encoder signature, or one of the 13 benchmark and 1 training Matterport3D renders that differ by a few pixels.
+- `check_frames.py` compares every frame with our md5. A `near` result needs no action: it is one of the 13 benchmark and 1 training Matterport3D renders that differ by a few pixels, or a frame with the same pixels and a different encoder signature.
+- `different` frames: `python scripts/check_frames.py --remove-different` deletes them (`--list <file>` writes all their paths), then run the build commands again; they skip the frames that are right.
+- Render the Matterport3D frames on a GPU that runs nothing else. Rendering next to another GPU job produced wrong frames and then stopped without a message.
 
 ## Training frames
 
 The same commands with `--set train` build the frames of ProSpace-Train (both sets and the validation files):
 
 ```bash
-python scripts/prepare_frames.py --dataset scannetpp --src <ScanNet++ root> --set train
+python scripts/prepare_frames.py --dataset scannetpp --src <ScanNet++ root> --set train --workers 32
 python scripts/prepare_frames.py --dataset scannet   --src <ScanNet root>   --set train
 python scripts/prepare_frames.py --dataset ca1m      --src <CA-1M root>     --set train
 conda run -n habitat python scripts/render_mp3d.py --src <Matterport3D root> --set train
@@ -56,8 +59,8 @@ python scripts/prepare_train.py --set 100k --check    # counts the frames the 10
 - CA-1M portrait captures are kept at their own size (768x1024); the loaders pillar-box every frame to 512x384.
 - ScanNet++ training frames were extracted by video timestamp, which runs up to a few frames behind the decode order, at JPEG quality 85, 90 or 92; `data/prospace_train/scannetpp_frame_sources.json` records both per frame, so `--set train` reproduces them exactly. 3,986 of them come from the ScanNet++ toolkit's extraction (`ffmpeg -q:v 1`): `prepare_frames.py` calls ffmpeg for these, by default the ffmpeg 4.4.2 that `setup.sh` installs into the `prospace` environment (`PROSPACE_FFMPEG=<path>` uses another one), and they are then byte-identical. Another ffmpeg writes its own version into the file, so the md5 differs although the pixels are the same (checked with ffmpeg 7.1.1); `check_frames.py` reports these frames as `near`.
 - The published stream files name the Matterport3D training frames `mp3d/<scene_id>/frames/frame_XXXXXX.jpg`, and the history before a mid-stream request `mp3d/<scene_id>/history_b/frame_JJJJ.jpg` (or `history/`). `prepare_train.py` maps them to `data/frames/mp3d/<scene_id>/frame_XXXXXX.jpg` and `data/frames/mp3d/<scene_id>_history/frame_<JJJJ>.jpg` (six digits) when it writes `cache/`.
-- `render_mp3d.py --houses <id> ...` renders only some houses, e.g. to split the work over GPUs (`--gpu`).
-- The training frames take about 100 GB. On one machine with 128 CPU cores and three H200 GPUs, the Matterport3D training render took about one hour (three processes, one per GPU, split with `--houses`), the ScanNet++ training frames about 45 minutes, CA-1M about 4 minutes, ScanNet a few seconds, and `check_frames.py --set train` about 7 minutes.
+- To split the Matterport3D render over GPUs, run one process per GPU on part of the houses: `render_mp3d.py --set train --list-houses` prints them, `--houses <id> ...` renders only those, and `--gpu <i>` is the index among the visible GPUs (with `CUDA_VISIBLE_DEVICES=5,6,7`, `--gpu 0` is GPU 5).
+- The training frames take about 100 GB. On one machine with 128 CPU cores and three H200 GPUs, the Matterport3D training render took about one hour (three processes, one per GPU, split with `--houses`), the ScanNet++ training frames about 45 minutes (`--workers 32`), CA-1M about 4 minutes, ScanNet a few seconds, and `check_frames.py --set train` about 7 minutes.
 
 ## Folder layout
 

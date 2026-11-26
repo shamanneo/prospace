@@ -60,13 +60,17 @@ def main():
     ap.add_argument("--poses", default=None, help="default data/prospace_<set>/mp3d_camera_poses.npz")
     ap.add_argument("--houses", nargs="*", help="only the scenes of these houses")
     ap.add_argument("--scenes", nargs="*", help="only these scene ids")
-    ap.add_argument("--gpu", type=int, default=0)
+    ap.add_argument("--gpu", type=int, default=0, help="index among the visible GPUs (CUDA_VISIBLE_DEVICES), not the physical id")
+    ap.add_argument("--list-houses", action="store_true", help="print the houses of --set and exit")
     a = ap.parse_args()
     check_layout()
+    z = np.load(a.poses or fetch(a.set, "mp3d_camera_poses.npz"))
+    if a.list_houses:
+        print(" ".join(sorted({str(s).split("_")[0] for s in z["scene_id"]})))
+        return
     import habitat_sim
     from habitat_sim.utils.common import quat_from_coeffs
 
-    z = np.load(a.poses or fetch(a.set, "mp3d_camera_poses.npz"))
     houses, scenes = set(a.houses or []), set(a.scenes or [])
     out = Path(a.out) / "mp3d"
     todo = defaultdict(list)  # house -> [(scene_id, frame_id, position, rotation)]
