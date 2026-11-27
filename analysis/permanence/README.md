@@ -2,6 +2,10 @@
 
 Reproduces the object permanence analysis of the paper for ProSpace-VLM: a linear probe reads the direction of an object from the model's state after the object has left the view.
 
+<p align="center"><img src="../../assets/fig_object_permanence.png" width="80%"></p>
+
+The code reproduces the Ours column.
+
 Run from the repository root in the `prospace` environment, after [docs/data.md](../../docs/data.md).
 
 ```bash
